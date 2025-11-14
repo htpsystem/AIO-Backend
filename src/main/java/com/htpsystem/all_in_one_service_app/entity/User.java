@@ -23,11 +23,14 @@ public class User {
 
     private String password;
     private boolean isActive = true;
+    @Column(name = "is_verified")
+    private boolean isVerified = false;
 
     // --- RELATIONSHIPS ---
     @ManyToOne
     @JoinColumn(name = "roleId")
     private Role role;
+
 
     // One-to-One relationship with user_data
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -36,4 +39,3 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserAddress userAddress;
 }
-
