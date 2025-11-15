@@ -16,7 +16,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())                // Disable CSRF (important for Postman)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register").permitAll()  // PUBLIC
+                        .requestMatchers("/api/auth/register","/api/auth/login").permitAll()  // PUBLIC
                         .anyRequest().permitAll()             // Make entire app public for now
                 )
                 .formLogin(form -> form.disable())            // Disable Spring Login Page

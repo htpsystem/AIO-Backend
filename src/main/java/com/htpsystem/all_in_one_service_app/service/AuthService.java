@@ -1,21 +1,19 @@
 package com.htpsystem.all_in_one_service_app.service;
 
+import com.htpsystem.all_in_one_service_app.dto.LoginRequestDTO;
+import com.htpsystem.all_in_one_service_app.dto.LoginResponseDTO;
 import com.htpsystem.all_in_one_service_app.dto.RegisterRequestDTO;
 import com.htpsystem.all_in_one_service_app.dto.RegisterResponseDTO;
-import com.htpsystem.all_in_one_service_app.entity.Gender;
-import com.htpsystem.all_in_one_service_app.entity.Role;
-import com.htpsystem.all_in_one_service_app.entity.User;
-import com.htpsystem.all_in_one_service_app.entity.UserData;
-import com.htpsystem.all_in_one_service_app.repository.GenderRepository;
-import com.htpsystem.all_in_one_service_app.repository.RoleReposistory;
-import com.htpsystem.all_in_one_service_app.repository.UserDataRepository;
-import com.htpsystem.all_in_one_service_app.repository.UserRepository;
+import com.htpsystem.all_in_one_service_app.entity.*;
+import com.htpsystem.all_in_one_service_app.repository.*;
+import com.htpsystem.all_in_one_service_app.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +25,9 @@ public class AuthService {
     private final GenderRepository genderRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserDataRepository userDataRepository;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
 
     public RegisterResponseDTO  register(RegisterRequestDTO requestDTO) {
         if (userRepository.findByEmail(requestDTO.getEmail()).isPresent()) {
@@ -71,5 +72,49 @@ public class AuthService {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    public LoginResponseDTO login(LoginRequestDTO requestDTO) {
+      User user = userRepository.findByEmail(requestDTO.getEmail())
+              .orElseThrow(()->new RuntimeException("User NotFound"));
+      if(!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
+          throw new RuntimeException("Invalid credentials");
+      }
+
+      if(!user.isVerified()) {
+          // 1. Create verification token
+          String token = UUID.randomUUID().toString();
+
+          EmailVerificationToken emailToken =  EmailVerificationToken.builder()
+                  .token(token)
+                  .expiry(LocalDateTime.now().plusMinutes(30))
+                  .user(user)
+                  .build();
+
+          emailVerificationTokenRepository.save(emailToken);
+
+          // 2. Send verification email (link)
+          String link = "http://localhost:8081/api/auth/verify-email?token=" + token;
+          System.out.println("Verification Link: " + link);
+
+          return LoginResponseDTO.builder()
+                 .message("Please verify your email. Verification link sent."+link)
+                  .token(null)
+                  .build();
+      }
+
+      // ✔ VERIFIED USER → Generate JWT (access Token)
+      String accessToken = jwtUtil.generateToken(user.getEmail());
+
+      // Create refresh token
+      String refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return LoginResponseDTO.builder()
+                .token(accessToken)
+                .refreshToken(refreshToken)
+                .message("Login Successfully!")
+                .email(user.getEmail())
+                .build();
+    }
+
 
 }
