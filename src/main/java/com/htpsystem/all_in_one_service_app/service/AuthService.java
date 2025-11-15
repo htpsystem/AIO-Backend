@@ -27,6 +27,7 @@ public class AuthService {
     private final UserDataRepository userDataRepository;
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
 
     public RegisterResponseDTO  register(RegisterRequestDTO requestDTO) {
         if (userRepository.findByEmail(requestDTO.getEmail()).isPresent()) {
@@ -101,13 +102,19 @@ public class AuthService {
                   .build();
       }
 
-      // ✔ VERIFIED USER → Generate JWT
-      String token = jwtUtil.generateToken(user.getEmail());
+      // ✔ VERIFIED USER → Generate JWT (access Token)
+      String accessToken = jwtUtil.generateToken(user.getEmail());
+
+      // Create refresh token
+      String refreshToken = refreshTokenService.createRefreshToken(user);
 
         return LoginResponseDTO.builder()
-                .token(token)
+                .token(accessToken)
+                .refreshToken(refreshToken)
                 .message("Login Successfully!")
                 .email(user.getEmail())
                 .build();
     }
+
+
 }

@@ -9,7 +9,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private static final String SECRET = "7dF!93KfL@aP09s#Qw1lZ$X7eU8*gH3kBvN5@Fs!xT2RzP0nM3qW#yD8cL&V9b";
-    private final long EXPIRATION = 1000L * 60 * 60 * 24 * 30; // 24 hours
+    private final long EXPIRATION = 1000L * 60 * 60 * 24; // 24 hours
 
     public String generateToken(String email){
         return JWT.create()
