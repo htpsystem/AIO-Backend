@@ -3,6 +3,7 @@ package com.htpsystem.all_in_one_service_app.service;
 import com.htpsystem.all_in_one_service_app.entity.RefreshToken;
 import com.htpsystem.all_in_one_service_app.entity.User;
 import com.htpsystem.all_in_one_service_app.repository.RefreshTokenRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
+    @Transactional
     public String createRefreshToken(User user) {
         // Delete old token (one token per user)
         refreshTokenRepository.deleteByUser(user);

@@ -44,7 +44,7 @@ public class AuthController {
         }
 
         catch (RuntimeException e) {
-
+            e.printStackTrace();
             if (e.getMessage().equalsIgnoreCase("User NotFound")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(LoginResponseDTO.builder()
