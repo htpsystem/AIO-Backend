@@ -24,6 +24,11 @@ public class AuthController {
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final UserRepository userRepository;
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Backend is working!");
+    }
+
     @PostMapping("/register")
     public ResponseEntity<RegisterResponseDTO> registerUser(@RequestBody RegisterRequestDTO requestDTO){
         RegisterResponseDTO responseDTO = authService.register(requestDTO);
