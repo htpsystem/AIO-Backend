@@ -42,17 +42,23 @@ jobs:
           script: |
             echo "🚀 Connected to VPS"
 
+            cd ${{ secrets.REMOTE_DOCKER_COMPOSE_DIR }}
+
             # Stop old container
             docker stop aio-backend || true
             docker rm aio-backend || true
 
             # Pull latest image from Docker Hub
-            docker pull ${{ secrets.DOCKER_USERNAME }}/aio-backend:latest
+            # docker pull ${{ secrets.DOCKER_USERNAME }}/aio-backend:latest
 
-            # Run new backend container
-            docker run -d \
-              --name aio-backend \
-              -p 8080:8080 \
-              ${{ secrets.DOCKER_USERNAME }}/aio-backend:latest
+            # # Run new backend container
+            # docker run -d \
+            #   --name aio-backend \
+            #   -p 8080:8080 \
+            #   ${{ secrets.DOCKER_USERNAME }}/aio-backend:latest
+
+            echo "Pulling latest image from docker hub"
+            docker compose pull
+            docker compose up -d --remove-orphans
 
             echo "🎉 Deployment completed successfully!"
