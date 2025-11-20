@@ -36,7 +36,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_SERVER_IP }}         # your VPS IP
           username: ${{ secrets.VPS_SERVER_USER }}   # usually root
-          key: ${{ secrets.VPS_SSH_KEY }}            # your private SSH key
+          key: ${{ secrets.VPS_DEPLOY_KEY }}            # your private SSH key
           port: 22
 
           script: |
