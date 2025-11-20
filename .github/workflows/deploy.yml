@@ -42,7 +42,8 @@ jobs:
           script: |
             echo "🚀 Connected to VPS"
 
-            cd ${{ secrets.REMOTE_DOCKER_COMPOSE_DIR }}
+            cd ${{ secrets.VPS_DOCKER_COMPOSE_DIR }}
+            pwd
 
             # Stop old container
             docker stop aio-backend || true
