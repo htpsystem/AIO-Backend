@@ -47,12 +47,12 @@ jobs:
             docker rm aio-backend || true
 
             # Pull latest image from Docker Hub
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/aio-backend:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/aio-backend:latest
 
             # Run new backend container
             docker run -d \
               --name aio-backend \
               -p 8080:8080 \
-              ${{ secrets.DOCKERHUB_USERNAME }}/aio-backend:latest
+              ${{ secrets.DOCKER_USERNAME }}/aio-backend:latest
 
             echo "🎉 Deployment completed successfully!"
