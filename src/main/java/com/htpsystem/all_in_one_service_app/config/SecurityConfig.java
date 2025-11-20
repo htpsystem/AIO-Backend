@@ -14,7 +14,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())                // Disable CSRF (important for Postman)
+                .csrf(csrf -> {})                // Disable CSRF (important for Postman)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register","/api/auth/login").permitAll()  // PUBLIC
                         .anyRequest().permitAll()             // Make entire app public for now
