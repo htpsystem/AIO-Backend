@@ -20,11 +20,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // enable CORS (uses CorsConfigurationSource bean below)
                 .cors(Customizer.withDefaults())
+                // disable CSRF for stateless REST APIs
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // Public endpoints
+                        // change the next line to .permitAll() only if you want everything open (not recommended for production)
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())
